@@ -1,11 +1,43 @@
-steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/[test-chary]/[nginx-4]:[cassandra]', '.']
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args:
-      - 'apply'
-      - '-f'
-      - '[PATH_TO_CASSANDRA_YAML]'
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=[us-east1-b]'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=[my-first-cluster-3]'
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+ name: mongo
+spec:
+ serviceName: "mongo"
+ replicas: 3
+ template:
+   metadata:
+     labels:
+       role: mongo
+       environment: test
+   spec:
+     terminationGracePeriodSeconds: 10
+     containers:
+       - name: mongo
+         image: mongo
+         command:
+           - mongod
+           - "--replSet"
+           - rs0
+           - "--smallfiles"
+           - "--noprealloc"
+         ports:
+           - containerPort: 27017
+         volumeMounts:
+           - name: mongo-persistent-storage
+             mountPath: /data/db
+       - name: mongo-sidecar
+         image: cvallance/mongo-k8s-sidecar
+         env:
+           - name: MONGO_SIDECAR_POD_LABELS
+             value: "role=mongo,environment=test"
+ volumeClaimTemplates:
+ - metadata:
+     name: mongo-persistent-storage
+     annotations:
+       volume.beta.kubernetes.io/storage-class: "fast"
+   spec:
+     accessModes: [ "ReadWriteOnce" ]
+     resources:
+       requests:
+         storage: 100Gi
