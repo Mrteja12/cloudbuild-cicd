@@ -1,4 +1,5 @@
-  - name: 'gcr.io/cloud-builders/docker'
+steps:
+- name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/[test-chary]/[nginx-4]:[cassandra]', '.']
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
