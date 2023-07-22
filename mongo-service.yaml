@@ -1,13 +1,15 @@
-apiVersion: v1
-kind: Service
-metadata:
- name: mongo
- labels:
-   name: mongo
-spec:
- ports:
- - port: 80
-   targetPort: 8080
- clusterIP: 
- selector:
-   role: mongo
+steps:
+      # build the continer image
+    - name:"gcr.io/cloud-builder/docker"
+      args: ["build", "-t","gcr.io/$PROJECT_ID/demo-app","."]
+      # push continer image
+    - name:"gcr.io/cloud-builder/docker"
+      args:["push","gcr.io/$PROJECT_ID/demo-app"]
+      # deploy continer image to GKE
+    - name:"gcr.io/cloud-builders/gke-deploy"
+      args:
+    - run
+    - --filename=ops/deployment.yaml
+    - --image=gcr.io/$PROJECT_IO/demo_app
+    - --location=us-central1-c
+    - --cluster=cluster-1
