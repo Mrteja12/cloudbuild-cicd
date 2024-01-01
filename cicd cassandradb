@@ -8,7 +8,7 @@ pipeline {
     }
     stage("Checkout") {
         steps {
-        sh 'git clone https://github.com/Mrteja12/cicdmongodb.git'
+        sh 'git clone https://github.com/Mrteja12/cloudbuild-cicd.git'
       }
     }
     stage('GCP Auth') {
