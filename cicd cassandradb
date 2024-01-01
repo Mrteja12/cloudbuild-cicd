@@ -1,0 +1,52 @@
+pipeline {
+  agent any
+  stages {
+    stage("Clear Workspace"){
+        steps {
+          sh 'rm -rvf c*'
+        }
+    }
+    stage("Checkout") {
+        steps {
+        sh 'git clone https://github.com/Mrteja12/cicdmongodb.git'
+      }
+    }
+    stage('GCP Auth') {
+        steps {
+         withCredentials([usernameColonPassword(credentialsId: '6c9e54627dd756c4b7d3c25ddaae06883e2467b6', variable: 'GCP_PROJECTS'), file(credentialsId: 'de3ade76-1b25-477b-b46c-44249b069121', variable: 'GCP_CREDENTIALS')]) {
+         sh 'gcloud auth activate-service-account --key-file=$GCP_CREDENTIALS'
+        }
+      }
+    }
+    stage("Docker pull") {
+      steps {
+        withCredentials([usernameColonPassword(credentialsId: 'sha256:c53cd2b98f24467e1512bbbb1d751d64b75c3477e4f74cca4e9fa565b2e7d6d9', variable: 'DOCKER')]) {
+        sh 'docker login -u charyy -p 123456789'
+        sh 'docker pull charyy/tejachary:tag33'
+       }
+     }
+    }
+    stage("Docker tag") {
+      steps {     
+         sh 'docker tag charyy/tejachary:tag33 gcr.io/tarak-408506/cassandradb:taga'
+      }
+    }
+    stage("Docker push") { 
+        steps {
+             sh 'gcloud auth configure-docker'
+             sh 'docker push gcr.io/tarak-408506/cassandradb:taga'
+           }
+        }
+     stage("cluster create") {
+       steps {
+          sh 'gcloud container clusters create cassandradb-cluster --num-nodes 3 --location=asia-east1-a'
+       }
+     }
+    stage("Create & expose deploy") {
+       steps {
+         sh 'kubectl create deployment cassandradb --image=gcr.io/tarak-408506/cassandradb:taga'
+         sh 'kubectl expose deployment cassandradb --type=LoadBalancer --port 80 --target-port 8080'
+       }
+    }
+  }  
+} 
