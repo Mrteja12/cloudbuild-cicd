@@ -11,16 +11,16 @@ pipeline {
         sh 'git clone https://github.com/Mrteja12/cloudbuild-cicd.git'
       }
     }
-    stage('GCP Auth') {
-        steps {
-         withCredentials([usernameColonPassword(credentialsId: 'fe998153a7d703f3ebe584143e8105d064080d31', variable: 'GCP_PROJECTS'), file(credentialsId: 'de3ade76-1b25-477b-b46c-44249b069121', variable: 'GCP_CREDENTIALS')]) {
-         sh 'gcloud auth activate-service-account --key-file=$GCP_CREDENTIALS'
-        }
+   withCredentials([usernameColonPassword(credentialsId: '47239e99-fde5-4428-a57e-e2379577d2da', variable: 'Gcp_credentails'), file(credentialsId: '0b17991c-6c39-4d96-be65-3abd0a6dc6f2', variable: 'service_account')]) {
+    // some block
+}
+}      
+}
       }
     }
     stage("Docker pull") {
       steps {
-        withCredentials([usernameColonPassword(credentialsId: 'sha256:c53cd2b98f24467e1512bbbb1d751d64b75c3477e4f74cca4e9fa565b2e7d6d9', variable: 'DOCKER')]) {
+        withCredentialswithCredentials([usernameColonPassword(credentialsId: 'efcbe52a-62a4-41b6-9659-5f414d299cdc', variable: 'docker')]){
         sh 'docker login -u charyy -p 123456789'
         sh 'docker pull charyy/tejachary:tag33'
        }
