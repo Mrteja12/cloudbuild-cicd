@@ -11,7 +11,7 @@ pipeline {
         sh 'git clone https://github.com/Mrteja12/cloudbuild-cicd.git'
       }
     }
-   withCredentials([usernameColonPassword(credentialsId: '47239e99-fde5-4428-a57e-e2379577d2da', variable: 'Gcp_credentails'), file(credentialsId: '0b17991c-6c39-4d96-be65-3abd0a6dc6f2', variable: 'service_account')]) {
+   withCredentials([usernameColonPassword(credentialsId:'47239e99-fde5-4428-a57e-e2379577d2da', variable: 'Gcp_credentails'), file(credentialsId: '0b17991c-6c39-4d96-be65-3abd0a6dc6f2', variable: 'service_account')]) {
     // some block
 }
 }      
