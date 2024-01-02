@@ -16,7 +16,7 @@ pipeline {
 }
 }      
 }
-      }
+      
     }
     stage("Docker pull") {
       steps {
